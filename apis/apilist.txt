@@ -1,0 +1,194 @@
+curl --location 'https://tms35.nepsetms.com.np/tmsapi/authApi/authenticate' \
+--header 'Accept: application/json, text/plain, */*' \
+--header 'Content-Type: application/json' \
+--header 'Origin: https://tms35.nepsetms.com.np' \
+--header 'Referer: https://tms35.nepsetms.com.np/login' \
+--header 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
+--data '{
+    "userName": "20210304277",
+    "password": "VXNhQDEyMzQ1",
+    "jwt": "",
+    "otp": "",
+    "captchaIdentifier": "39f7197b-11af-4f27-b3e3-19ccfc73ba0d",
+    "userCaptcha": "6ru4sb"
+}'
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+curl --location 'https://tms35.nepsetms.com.np/tmsapi/orderApi/order/' \
+--header 'Cookie: XSRF-TOKEN=2c77f777-56a8-41e9-8b13-3abfd1a61b36; _aid=eyJlbmMiOiJBMTI4R0NNIiwiYWxnIjoiZGlyIn0..spVZUeeoKs49moyJ.r0w1nXWTDuXXbB2r6E3y6Y0aduF8wQZZWb72YGTZXjGECw9hwwe8S4u4KWyQPcrUaKRSWmImTVBYPZxJPzb-3IMYETLi_CR10xpeFzIoti4xWTKBYqskVcj2l412TGn2zdSMzcKzwNQL8VyIa_PHEMZ3oMUAJwjkWVOHqGZJAlQrLCIPdHefy2q07ECb2pUxQP_G86S6uZVRD9I3AVRT03xsYDrt-8wVhbWflGt2JBqoYCYY3sXHnXko8iTVUQr5TN0YOGZQi--tXbPd_LpBKKoGcNMf2TXalXrgce53Mj1Xqtbj8vW0slhxZb7qAxGlsGojOFt6N2YmmPNuk2zZ4f5_CEGFFw2oXgCeH4_M6vL0mnR4fVlwpzzIxGzHYkPR56d_-Pv3y4nkW_Uk5iHlJhkTNaTeyQt0XjROVzxQwPUOc20NnLPDR_BRbtVdJRG-BckiJzkCBrF58O_q42q4oWEcTQulrc8FcxLOhz_WfBM3edD4f0LEOpuqBIZtt_ZySmfXLLG1Lwyl6iTc2EjqZaOqQiOLZRXOEqY35dNBe2pyWec9epbCzbnju9HTvi8AjH5UzkY.nof_kxRnATStJJobFinHfw; _rid=eyJlbmMiOiJBMTI4R0NNIiwiYWxnIjoiZGlyIn0..b26NU-cy30KuE_ST.RytMpTzLh_rqlzC4M9VeRydGqVhzkzZGxjfb4oA0p7YPZvu0NHa6oILPS3Zc1bDVLsTiroK2f5WMhr_WikvXPVVbeQuLYMjvfjTWO93zKpWMM6pwqwL7mrJKfftbxnAHOS9M4VAX7p1-SpuIxDM9_kAdPzCY8h01cF0gOjAhkGOcReLMI_H0mBUYNufpiuANg94lSQvcYQTRuF59DWHX3Zb2UmydGnUdUJbIlO_38VRG9hSOeglHA_y0V_A-ySI96KWTmaj5VZFUH9tzKPtxRk0xcVW6VSdB_1X0o3DtD-w4k4EU9Cdo-8wFBi0KH77swT0PQfuo1UL7RpHitYIG_lgVq-DtbO3M9TLuZ_0RLZrJBITRK17nNiB1GXFAKngm-9wNEe_mwJTB9qCYFjER4zEUc5YWB0w_yAyC9AQPSn4m_EUlDDK9a1Igx8SbSri1EW5ZICqJB2KAnYDzlDLAtGOZqeMIR3ELtyN6uqAOKHVOAkCi9KeVybnnc31upjX0pmRpcBEPs6wH3mZnpD0cJo0C4wjLX5DFeMkFjY4M7qGPVJDPVYXdi-RmuIpHJ1i8-z-fy2I.SaMPH0nmjFDb26WF9Q9t1g' \
+--header 'host-session-id: TWpRPS1kYmJhMzQ5NS03Njc4LTQ1MTItYWE4ZC01YjUyZWI0NjUxNTM' \
+--header 'x-xsrf-token: 2c77f777-56a8-41e9-8b13-3abfd1a61b36' \
+--header 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
+--header 'request-owner: 48920' \
+--header 'Content-Type: application/json' \
+--data '{
+    "orderBook": {
+        "orderBookExtensions": [
+            {
+                "orderTypes": {
+                    "id": 1,
+                    "orderTypeCode": "LMT"
+                },
+                "disclosedQuantity": 0,
+                "orderValidity": {
+                    "id": 1,
+                    "orderValidityCode": "DAY"
+                },
+                "triggerPrice": 0,
+                "orderPrice": 900,
+                "orderQuantity": 1000,
+                "remainingOrderQuantity": 10,
+                "marketType": {
+                    "id": 2,
+                    "marketType": "Continuous"
+                }
+            }
+        ],
+        "exchange": {
+            "id": 1
+        },
+        "dnaConnection": {},
+        "dealer": {},
+        "member": {},
+        "productType": {
+            "id": 1,
+            "productCode": "CNC"
+        },
+        "instrumentType": {
+            "id": 1,
+            "code": "EQ"
+        },
+        "client": {
+            "activeStatus": "A",
+            "id": 2155370,
+            "accountType": "CLI",
+            "allowedToTrade": "Y",
+            "clientMemberCode": "20210304277",
+            "clientOrDealer": "C",
+            "contactNumber": "9857087455",
+            "emailId": null,
+            "notsUniqueClientCode": "202101181812704",
+            "clientDealerType": null,
+            "clientGroup": {
+                "activeStatus": "A",
+                "id": 101,
+                "clientGroupCode": null,
+                "clientGroupName": null
+            },
+            "memberBranch": {
+                "activeStatus": "A",
+                "id": 2,
+                "branchLocation": null,
+                "branchName": null,
+                "hidden": null,
+                "branchProvince": null,
+                "branchDistrict": null,
+                "branchMunicipality": null,
+                "branchHead": null,
+                "branchPhoneNumber": null
+            },
+            "clientDealerAddressDetails": null,
+            "clientDealerBankDetail": null,
+            "clientDealerIndividual": null,
+            "clientDealerPerTradeLimits": null,
+            "clientDealerProductMappings": null,
+            "clientDealerOrderTypeMappings": null,
+            "clientDealerTradingLimits": null,
+            "clientDepositoryDetail": null,
+            "corporateDetail": null,
+            "corporateOwnershipDetails": null,
+            "displayName": "Rupesh Babu Giri",
+            "blockedDate": null,
+            "remarks": null,
+            "parentId": null,
+            "recordType": null,
+            "collateralByEntities": null,
+            "shortSellMode": 0,
+            "onlineOrOffline": 1,
+            "panNumber": "113728389",
+            "onlineFundTransfer": null,
+            "collateralCalculationMode": 1,
+            "isMarginLendingClient": null,
+            "clientRiskType": null,
+            "userAgreementChecked": null,
+            "referredBy": null,
+            "responseStatus": null,
+            "kycUpload": false,
+            "marginLendingClient": null
+        },
+        "security": {
+            "id": 2868,
+            "exchangeSecurityId": 2917,
+            "marketProtectionPercentage": 0,
+            "divisor": 100,
+            "boardLotQuantity": 1,
+            "tickSize": 0.1
+        },
+        "accountType": 1,
+        "cpMemberId": 0,
+        "buyOrSell": 1
+    },
+    "orderPlacedBy": 2,
+    "exchangeOrderId": null
+}'
+
+---------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+Skip to content
+Using Gmail with screen readers
+Enable desktop notifications for Gmail.
+   OK  No thanks
+Conversations
+Get started with Gmail
+Customize your inbox
+Change profile image
+Import contacts and mail
+Get Gmail for mobile
+0.02 GB of 15 GB used
+Terms · Privacy · Program Policies
+Last account activity: 0 minutes ago
+Open in 1 other location · Details
+import requests
+from requests import session
+import requests_futures
+from concurrent.futures import as_completed
+from concurrent.futures import ThreadPoolExecutor
+from requests_futures.sessions import FuturesSession
+
+session = FuturesSession(executor=ThreadPoolExecutor(max_workers=8))
+url = 'https://tms35.nepsetms.com.np/tmsapi/orderbook-v2/'
+headers = {
+    'Connection': 'keep-alive',
+    'Content-Type': 'application/json',
+    'Cookie': 'refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0ODkyMCIsImlhdCI6MTYxNTA5MTgzMCwic3ViIjoiTUFELUNSVSxGTS1DQTFSQTNEQTJVLE1JTkZPLVIsT00tQ1JVLFNCSS1DQTFSQTNEQTJVLExGLUNBMVJBM0RBMlUsR0wtUixUQi1DUlUsU1EtUixNVy1SLFBGLUNBMVJBM0RBMlUsT0ItQ0ExUkEzREEyVSxESC1DUlUsQ0NNLUNBMVJBM0RBMlUsT0JILVIsQ1MtQ0ExUkEzREEyVSxUUi1DUlUsU1NJLUNBMVJBM0RBMlUsQ0ZULUNBMVJBM0RBMlUsRlctQ0ExUkEzREEyVSxTVExCSS1DUlUsV1MtUixNTE5XUy1SLE1MLVIsRE5BUy1SLE1XREMtUixDTFRTLVIsTUNPRS1DQTFSQTNEQTJVLEROQUwtUixUQkgtUiIsImlzcyI6IjIwMjEwMzA0Mjc3IiwiZXhwIjoxNjE1MDk1NDMwLCJpc0NsaWVudCI6IjEiLCJpc01lbWJlciI6IjAiLCJpc0RlYWxlciI6IjAifQ.fTqGACumWptf_bVEvmicsLqfi4Kn1PAFGkL_rzUm8zE; accessToken=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0ODkyMCIsImlhdCI6MTYxNTA5MTgzMCwic3ViIjoiTUFELUNSVSxGTS1DQTFSQTNEQTJVLE1JTkZPLVIsT00tQ1JVLFNCSS1DQTFSQTNEQTJVLExGLUNBMVJBM0RBMlUsR0wtUixUQi1DUlUsU1EtUixNVy1SLFBGLUNBMVJBM0RBMlUsT0ItQ0ExUkEzREEyVSxESC1DUlUsQ0NNLUNBMVJBM0RBMlUsT0JILVIsQ1MtQ0ExUkEzREEyVSxUUi1DUlUsU1NJLUNBMVJBM0RBMlUsQ0ZULUNBMVJBM0RBMlUsRlctQ0ExUkEzREEyVSxTVExCSS1DUlUsV1MtUixNTE5XUy1SLE1MLVIsRE5BUy1SLE1XREMtUixDTFRTLVIsTUNPRS1DQTFSQTNEQTJVLEROQUwtUixUQkgtUiIsImlzcyI6IjIwMjEwMzA0Mjc3IiwiZXhwIjoxNjE1MTIxODMwLCJpc0NsaWVudCI6IjEiLCJpc01lbWJlciI6IjAiLCJpc0RlYWxlciI6IjAifQ.tatUpWr8zC3U3zLb5CVPFkeCid6oagh0uLSc6Gv8Gw4; XSRF-TOKEN=6f22a003-be15-4a9f-adfa-5362bed75548',
+    'Accept': 'application/json, text/plain, */*',
+    'X-XSRF-TOKEN': '6f22a003-be15-4a9f-adfa-5362bed75548',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.27 Safari/537.36 Edg/88.0.705.18',
+}
+
+pload = '{"orderBook":{"orderBookExtensions":[{"orderTypes":{"id":1,"orderTypeCode":"LMT"},"disclosedQuantity":0,"orderValidity":{"id":1,"orderValidityCode":"DAY"},"triggerPrice":0,"orderPrice":665,"orderQuantity":200,"remainingOrderQuantity":200,"marketType":{"id":2,"marketType":"Continuous"}}],"exchange":{"id":1},"dnaConnection":{},"dealer":{},"member":{},"productType":{"id":1,"productCode":"CNC"},"instrumentType":{"id":1,"code":"EQ"},"client":{"activeStatus":"A","id":2155370,"accountType":"CLI","allowedToTrade":"Y","clientMemberCode":"20210304277","clientOrDealer":"C","contactNumber":"9857087455","emailId":"hello@rupeshgiri.com.np","notsUniqueClientCode":"202101181812704","clientDealerType":null,"clientGroup":null,"memberBranch":null,"clientDealerAddressDetails":null,"clientDealerBankDetail":{"activeStatus":"A","id":26490,"branchName":null,"accountNumber":"5207010003379","accountType":{"activeStatus":"A","id":5,"code":"SAV","name":"Saving"},"parentId":null,"recordType":null,"bankBranchMaster":{"activeStatus":"A","id":1108,"bank":{"activeStatus":"A","id":27,"code":"GBIME","name":"Global IME Bank Limited","eBankingUrl":"https://globalonline.globalimebank.com.np/epay.xhtml","method":null,"verificationURL":"https://globalonline.globalimebank.com.np/epay.xhtml","redirectionUrl":"https://tms35.nepsetms.com.np/tmsapi/external/response","fileNumber":135,"nchlBankId":"1901","providerType":null,"nchlHeadBranchId":"75","bankBranchMasters":null,"isAccValidationEnabled":true,"ebankingEnabled":true,"cipsEnabled":true,"nchlBank":true},"branchId":"52","branchName":"Kawasoti Branch"},"isValidated":1,"lastValidatedOn":"2021-03-04","primary":null},"clientDealerIndividual":{"activeStatus":"A","id":2155205,"annualIncome":0,"citizenshipNumber":"362025/1581","dateOfBirth":"2051-04-02","fathersName":"Kishor Kumar Giri","firstName":"Rupesh","gender":"M","lastName":"Giri","maritalStatus":"Unmarried","middleName":"Babu","nationality":{"activeStatus":"A","id":82,"country":"Nepal","countryCode":"NPR","currencySymbol":"?","currency":"Rupees"},"phoneNumber1":"9857087455","grandFathersName":"Man Badhadur Giri","citizenshipIssuedPlace":"Nawalparasi (State 4)","citizenshipIssuedDate":"2011-05-16","parentId":null,"recordType":null,"mobileNo":null,"motherName":"Jamuna Giri","spouseName":null,"sonName":null,"daughterName":null,"daughterInLawName":null,"fatherInLawName":null,"motherInLawName":null,"isMinor":false,"isNrn":false,"nrnidno":null,"photo":null,"occupation":{"activeStatus":"A","id":2,"name":"Government","category":{"activeStatus":"A","id":1,"categoryName":"Occupation"}},"businesstype":{"activeStatus":"A","id":12,"name":"Service Oriented","category":{"activeStatus":"A","id":2,"categoryName":"Business Type"}},"organizationName":"Kawasoti Municipality","organizationAddress":"Kawasoti - 2","designation":{"activeStatus":"A","id":16,"name":"Employee","category":{"activeStatus":"A","id":3,"categoryName":"Designation"}},"employeeId":null,"financialDetails":{"activeStatus":"A","id":23,"name":"Upto 5,00,000","category":{"activeStatus":"A","id":6,"categoryName":"Financial Details"}},"isInvolvedInInvestCompany":false,"investmentCompanyName":null,"designationInInvestComp":null,"guardianName":null,"guardianRelationship":null,"guardianTelephoneNo":null,"guardianMobileNo":null,"guardianFaxNo":null,"guardianPanNo":null,"guardianEmailId":null},"clientDealerPerTradeLimits":null,"clientDealerProductMappings":null,"clientDealerOrderTypeMappings":null,"clientDealerTradingLimits":null,"clientDepositoryDetail":{"activeStatus":"A","id":26544,"depositoryAccount1":1301120001889385,"depositoryAccount2":null,"depositoryAccount3":null,"parentId":null,"recordType":null},"corporateDetail":null,"corporateOwnershipDetails":null,"displayName":"Rupesh Babu Giri","blockedDate":null,"remarks":"","parentId":null,"recordType":null,"collateralByEntities":null,"shortSellMode":0,"onlineOrOffline":1,"panNumber":"113728389","onlineFundTransfer":null,"collateralCalculationMode":1,"isMarginLendingClient":false,"clientRiskType":"Low Risk"},"security":{"id":2868,"exchangeSecurityId":2917,"marketProtectionPercentage":0,"divisor":100,"boardLotQuantity":1,"tickSize":1},"accountType":1,"cpMemberId":0,"buyOrSell":1},"orderPlacedBy":2,"exchangeOrderId":null}'
+
+i = True
+while i:
+    with FuturesSession() as session:
+        futures = [session.post(url, headers = headers, data = pload) for i in range(250)]
+        for future in as_completed(futures):
+            print("Done")
+        print("Finished!")
