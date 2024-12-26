@@ -17,7 +17,6 @@ security_id = os.getenv('SECURITY_ID')
 security_exchange_id = os.getenv('SECURITY_EXCHANGE_ID')
 number_of_request = os.getenv('NUMBER_OF_REQUEST')
 
-# url = 'http://localhost:8080/data'
 headers = {
     'Cookie': cookie,
     'X-XSRF-TOKEN': xsrf_token,
@@ -140,14 +139,13 @@ pload = {
 }
 
 with requests_futures.sessions.FuturesSession(executor=ThreadPoolExecutor(max_workers=8)) as session:
-    futures = [session.post(url, headers=headers, data=pload) for _ in range(int(number_of_request))]
-    for future in as_completed(futures):
-        try:
-            response = future.result()
-            if response.status_code == 200:
-                print(f"Request succeeded")
-            else:
-                print(f"error: {response.text}")
-        except Exception as e:
-            print(f"~ - {e}")
+    while True:
+        futures = [session.post(url, headers=headers, data=pload) for _ in range(int(number_of_request))]
+        for future in as_completed(futures):
+            try:
+                response = future.result()
+                if response.status_code == 200:
+                    print(f"order placed!")
+            except Exception as e:
+                pass
 
