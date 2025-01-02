@@ -6,7 +6,7 @@ To run this, there are few requirement.
 
 - Install the required dependency by firing below command
 
-<code>pip install -r requirements.txt</code>
+`pip install -r requirement.txt`
 
 Use `.env` file for configuration purpose.
 

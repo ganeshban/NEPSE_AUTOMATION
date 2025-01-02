@@ -10,14 +10,12 @@ url = os.getenv("API_URL")
 cookie = os.getenv('COOKIE')
 host_session_id = os.getenv('HOST_SESSION_ID')
 xsrf_token=os.getenv('X-XSRF-TOKEN')
-buy_sale = os.getenv('BUY_SALE')
-qty = os.getenv('QTY')
-price = os.getenv('RATE')
-security_id = os.getenv('SECURITY_ID')
-security_exchange_id = os.getenv('SECURITY_EXCHANGE_ID')
-number_of_request = os.getenv('NUMBER_OF_REQUEST')
+qty = 10
+price = 12936
+security_id=213
+security_exchange_id=213
 
-# url = 'http://localhost:8080/data'
+
 headers = {
     'Cookie': cookie,
     'X-XSRF-TOKEN': xsrf_token,
@@ -28,7 +26,8 @@ headers = {
     'Accept': 'application/json, text/plain, */*',
 }
 
-pload = {
+pload = '''
+{
     "orderBook": {
         "orderBookExtensions": [
             {
@@ -42,8 +41,8 @@ pload = {
                     "orderValidityCode": "DAY"
                 },
                 "triggerPrice": 0,
-                "orderPrice": price,
-                "orderQuantity": qty,
+                "orderPrice": {price},
+                "orderQuantity": {qty},
                 "remainingOrderQuantity": 10,
                 "marketType": {
                     "id": 2,
@@ -73,59 +72,59 @@ pload = {
             "clientMemberCode": "20210304277",
             "clientOrDealer": "C",
             "contactNumber": "9857087455",
-            "emailId": None,
+            "emailId": null,
             "notsUniqueClientCode": "202101181812704",
-            "clientDealerType": None,
+            "clientDealerType": null,
             "clientGroup": {
                 "activeStatus": "A",
                 "id": 101,
-                "clientGroupCode": None,
-                "clientGroupName": None
+                "clientGroupCode": null,
+                "clientGroupName": null
             },
             "memberBranch": {
                 "activeStatus": "A",
                 "id": 2,
-                "branchLocation": None,
-                "branchName": None,
-                "hidden": None,
-                "branchProvince": None,
-                "branchDistrict": None,
-                "branchMunicipality": None,
-                "branchHead": None,
-                "branchPhoneNumber": None
+                "branchLocation": null,
+                "branchName": null,
+                "hidden": null,
+                "branchProvince": null,
+                "branchDistrict": null,
+                "branchMunicipality": null,
+                "branchHead": null,
+                "branchPhoneNumber": null
             },
-            "clientDealerAddressDetails": None,
-            "clientDealerBankDetail": None,
-            "clientDealerIndividual": None,
-            "clientDealerPerTradeLimits": None,
-            "clientDealerProductMappings": None,
-            "clientDealerOrderTypeMappings": None,
-            "clientDealerTradingLimits": None,
-            "clientDepositoryDetail": None,
-            "corporateDetail": None,
-            "corporateOwnershipDetails": None,
+            "clientDealerAddressDetails": null,
+            "clientDealerBankDetail": null,
+            "clientDealerIndividual": null,
+            "clientDealerPerTradeLimits": null,
+            "clientDealerProductMappings": null,
+            "clientDealerOrderTypeMappings": null,
+            "clientDealerTradingLimits": null,
+            "clientDepositoryDetail": null,
+            "corporateDetail": null,
+            "corporateOwnershipDetails": null,
             "displayName": "Rupesh Babu Giri",
-            "blockedDate": None,
-            "remarks": None,
-            "parentId": None,
-            "recordType": None,
-            "collateralByEntities": None,
+            "blockedDate": null,
+            "remarks": null,
+            "parentId": null,
+            "recordType": null,
+            "collateralByEntities": null,
             "shortSellMode": 0,
             "onlineOrOffline": 1,
             "panNumber": "113728389",
-            "onlineFundTransfer": None,
+            "onlineFundTransfer": null,
             "collateralCalculationMode": 1,
-            "isMarginLendingClient": None,
-            "clientRiskType": None,
-            "userAgreementChecked": None,
-            "referredBy": None,
-            "responseStatus": None,
-            "kycUpload": False,
-            "marginLendingClient": None
-        },
+            "isMarginLendingClient": null,
+            "clientRiskType": null,
+            "userAgreementChecked": null,
+            "referredBy": null,
+            "responseStatus": null,
+            "kycUpload": false,
+            "marginLendingClient": null
+         },
         "security": {
-            "id": security_id,
-            "exchangeSecurityId": security_exchange_id,
+            "id": {security_id},
+            "exchangeSecurityId": {security_exchange_id},
             "marketProtectionPercentage": 0,
             "divisor": 100,
             "boardLotQuantity": 1,
@@ -133,21 +132,25 @@ pload = {
         },
         "accountType": 1,
         "cpMemberId": 0,
-        "buyOrSell": buy_sale
+        "buyOrSell": 1
     },
     "orderPlacedBy": 2,
-    "exchangeOrderId": None
+    "exchangeOrderId": null
 }
+'''.replace("{price}",str(price)).replace("{qty}",str(qty)).replace("{security_exchange_id}",str(security_exchange_id)).replace("{security_id}",str(security_id))
 
 with requests_futures.sessions.FuturesSession(executor=ThreadPoolExecutor(max_workers=8)) as session:
-    futures = [session.post(url, headers=headers, data=pload) for _ in range(int(number_of_request))]
-    for future in as_completed(futures):
-        try:
-            response = future.result()
-            if response.status_code == 200:
-                print(f"Request succeeded")
-            else:
-                print(f"error: {response.text}")
-        except Exception as e:
-            print(f"~ - {e}")
+    while True:
+        futures = [session.post(url, headers=headers, data=pload) for _ in range(int(50))]
+        for future in as_completed(futures):
+            try:
+                response = future.result()
+                if response.status_code == 200:
+                    print(f"Request succeeded")
+                elif response.status_code == 502:
+                    pass
+                else:
+                    print(f"error: {response.text}")
+            except Exception as e:
+                pass
 
