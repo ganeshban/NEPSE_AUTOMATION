@@ -11,16 +11,18 @@ cookie = os.getenv('COOKIE')
 host_session_id = os.getenv('HOST_SESSION_ID')
 xsrf_token=os.getenv('X-XSRF-TOKEN')
 qty = 10
-price = 957
-security_id=8126
-security_exchange_id=8126
+price = 586.3
+security_id=3059
+security_exchange_id=9246
 
 
 headers = {
     'Cookie': cookie,
     'X-XSRF-TOKEN': xsrf_token,
     'host-session-id':host_session_id,
-    'request-owner': '48920',
+    'origin':'https://tms34.nepsetms.com.np',
+    'request-owner':'150663',
+    'referer':'https://tms34.nepsetms.com.np/tms/me/memberclientorderentry',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
     'Content-Type': 'application/json',
     'Accept': 'application/json, text/plain, */*',
@@ -66,24 +68,24 @@ pload = '''
         },
         "client": {
             "activeStatus": "A",
-            "id": 2155370,
+            "id": 2234482,
             "accountType": "CLI",
             "allowedToTrade": "Y",
-            "clientMemberCode": "20210304277",
+            "clientMemberCode": "20231252966",
             "clientOrDealer": "C",
-            "contactNumber": "9857087455",
+            "contactNumber": "9847240018",
             "emailId": null,
-            "notsUniqueClientCode": "202101181812704",
+            "notsUniqueClientCode": "202312293604532",
             "clientDealerType": null,
             "clientGroup": {
                 "activeStatus": "A",
-                "id": 101,
+                "id": null,
                 "clientGroupCode": null,
                 "clientGroupName": null
             },
             "memberBranch": {
                 "activeStatus": "A",
-                "id": 2,
+                "id": 4,
                 "branchLocation": null,
                 "branchName": null,
                 "hidden": null,
@@ -103,7 +105,7 @@ pload = '''
             "clientDepositoryDetail": null,
             "corporateDetail": null,
             "corporateOwnershipDetails": null,
-            "displayName": "Rupesh Babu Giri",
+            "displayName": "KISHOR KUMAR GIRI",
             "blockedDate": null,
             "remarks": null,
             "parentId": null,
@@ -111,7 +113,7 @@ pload = '''
             "collateralByEntities": null,
             "shortSellMode": 0,
             "onlineOrOffline": 1,
-            "panNumber": "113728389",
+            "panNumber": null,
             "onlineFundTransfer": null,
             "collateralCalculationMode": 1,
             "isMarginLendingClient": null,
@@ -132,7 +134,7 @@ pload = '''
         },
         "accountType": 1,
         "cpMemberId": 0,
-        "buyOrSell": 2
+        "buyOrSell": 1
     },
     "orderPlacedBy": 2,
     "exchangeOrderId": null
@@ -152,5 +154,5 @@ with requests_futures.sessions.FuturesSession(executor=ThreadPoolExecutor(max_wo
                 else:
                     print(f"error: {response.text}")
             except Exception as e:
-                pass
+                print(e)
 

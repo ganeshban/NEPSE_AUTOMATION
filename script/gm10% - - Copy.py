@@ -10,10 +10,10 @@ url = os.getenv("API_URL")
 cookie = os.getenv('COOKIE')
 host_session_id = os.getenv('HOST_SESSION_ID')
 xsrf_token=os.getenv('X-XSRF-TOKEN')
-qty = 10
-price = 957
-security_id=8126
-security_exchange_id=8126
+qty =1000
+price =440.66
+security_id=3060
+security_exchange_id=9246
 
 
 headers = {
@@ -132,7 +132,7 @@ pload = '''
         },
         "accountType": 1,
         "cpMemberId": 0,
-        "buyOrSell": 2
+        "buyOrSell": 1
     },
     "orderPlacedBy": 2,
     "exchangeOrderId": null

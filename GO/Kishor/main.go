@@ -1,33 +1,31 @@
-from concurrent.futures import as_completed, ThreadPoolExecutor
-import requests_futures.sessions
-import requests_futures
-from dotenv import load_dotenv
-import os
+package main
 
-load_dotenv()
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"sync"
 
-url = os.getenv("API_URL")
-cookie = os.getenv('COOKIE')
-host_session_id = os.getenv('HOST_SESSION_ID')
-xsrf_token=os.getenv('X-XSRF-TOKEN')
-qty = 10
-price = 957
-security_id=8126
-security_exchange_id=8126
+	"github.com/joho/godotenv"
+)
 
+func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+		return
+	}
 
-headers = {
-    'Cookie': cookie,
-    'X-XSRF-TOKEN': xsrf_token,
-    'host-session-id':host_session_id,
-    'request-owner': '48920',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json, text/plain, */*',
-}
+	domain := os.Getenv("SUBDOMAIN")
 
-pload = '''
-{
+	price := "416.7"
+	qty := "10"
+	security_id := "3059"
+	security_exchange_id := "9246"
+
+	data := `
     "orderBook": {
         "orderBookExtensions": [
             {
@@ -41,8 +39,8 @@ pload = '''
                     "orderValidityCode": "DAY"
                 },
                 "triggerPrice": 0,
-                "orderPrice": {price},
-                "orderQuantity": {qty},
+                "orderPrice":` + price + ` ,
+                "orderQuantity": ` + qty + `,
                 "remainingOrderQuantity": 10,
                 "marketType": {
                     "id": 2,
@@ -66,24 +64,24 @@ pload = '''
         },
         "client": {
             "activeStatus": "A",
-            "id": 2155370,
+            "id": 2234482,
             "accountType": "CLI",
             "allowedToTrade": "Y",
-            "clientMemberCode": "20210304277",
+            "clientMemberCode": "20231252966",
             "clientOrDealer": "C",
-            "contactNumber": "9857087455",
+            "contactNumber": "9847240018",
             "emailId": null,
-            "notsUniqueClientCode": "202101181812704",
+            "notsUniqueClientCode": "202312293604532",
             "clientDealerType": null,
             "clientGroup": {
                 "activeStatus": "A",
-                "id": 101,
+                "id": null,
                 "clientGroupCode": null,
                 "clientGroupName": null
             },
             "memberBranch": {
                 "activeStatus": "A",
-                "id": 2,
+                "id": 4,
                 "branchLocation": null,
                 "branchName": null,
                 "hidden": null,
@@ -103,7 +101,7 @@ pload = '''
             "clientDepositoryDetail": null,
             "corporateDetail": null,
             "corporateOwnershipDetails": null,
-            "displayName": "Rupesh Babu Giri",
+            "displayName": "KISHOR KUMAR GIRI",
             "blockedDate": null,
             "remarks": null,
             "parentId": null,
@@ -111,7 +109,7 @@ pload = '''
             "collateralByEntities": null,
             "shortSellMode": 0,
             "onlineOrOffline": 1,
-            "panNumber": "113728389",
+            "panNumber": null,
             "onlineFundTransfer": null,
             "collateralCalculationMode": 1,
             "isMarginLendingClient": null,
@@ -123,8 +121,8 @@ pload = '''
             "marginLendingClient": null
         },
         "security": {
-            "id": {security_id},
-            "exchangeSecurityId": {security_exchange_id},
+            "id": ` + security_id + `,
+            "exchangeSecurityId": ` + security_exchange_id + `,
             "marketProtectionPercentage": 0,
             "divisor": 100,
             "boardLotQuantity": 1,
@@ -132,25 +130,86 @@ pload = '''
         },
         "accountType": 1,
         "cpMemberId": 0,
-        "buyOrSell": 2
+        "buyOrSell": 1
     },
     "orderPlacedBy": 2,
     "exchangeOrderId": null
+`
+
+	if domain == "" {
+		fmt.Println("Missing required environment variables (DOMAIN).")
+		return
+	}
+	headers := getHeaders()
+	url := "https://" + domain + ".nepsetms.com.np/tmsapi/orderApi/order/"
+
+	fmt.Println("Placing ORDER !!!")
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < 3; i++ {
+		wg.Add(1) // Add one to the WaitGroup counter
+		go sendRequest(&wg, url, data, headers)
+	}
+
+	wg.Wait()
 }
-'''.replace("{price}",str(price)).replace("{qty}",str(qty)).replace("{security_exchange_id}",str(security_exchange_id)).replace("{security_id}",str(security_id))
 
-with requests_futures.sessions.FuturesSession(executor=ThreadPoolExecutor(max_workers=8)) as session:
-    while True:
-        futures = [session.post(url, headers=headers, data=pload) for _ in range(int(50))]
-        for future in as_completed(futures):
-            try:
-                response = future.result()
-                if response.status_code == 200:
-                    print(f"Request succeeded")
-                elif response.status_code == 502:
-                    pass
-                else:
-                    print(f"error: {response.text}")
-            except Exception as e:
-                pass
+func getHeaders() map[string]string {
 
+	cookie := os.Getenv("COOKIE")
+	token := os.Getenv("TOKEN")
+	session := os.Getenv("SESSION")
+	request_owner := os.Getenv("REQUEST_OWNER")
+
+	headers := make(map[string]string)
+	headers["Content-Type"] = "application/json"
+	headers["accept"] = "application/json, text/plain, */*"
+	headers["cookie"] = cookie
+	headers["x-xsrf-token"] = token
+	headers["host-session-id"] = session
+	headers["request-owner"] = request_owner
+
+	return headers
+}
+
+func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string]string) {
+	defer wg.Done()
+
+	// Create a new POST request with the provided URL, headers, and payload
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(data)))
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+
+	// Add headers to the request
+	for key, value := range headers {
+		req.Header.Add(key, value)
+	}
+	fmt.Println("Request url is :", req.URL)
+	fmt.Println("Request body is :", req.Body)
+	fmt.Println("Request Header is :", req.Header)
+	// Sending HTTP POST request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending POST request:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Error reading response body:", err)
+		return
+	}
+
+	// Print out the status code of the response
+	fmt.Printf("Received response with status code: %d\n", resp.StatusCode)
+
+	// Print the response body (or you could log it or process it as needed)
+	fmt.Println("Response Body:", string(responseBody))
+
+}
