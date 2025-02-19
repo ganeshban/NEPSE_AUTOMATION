@@ -18,7 +18,7 @@ func main() {
 		return
 	}
 
-	domain := os.Getenv("SUBDOMAIN")
+	domain := os.Getenv("TMS")
 
 	price := "416.7"
 	qty := "10"
@@ -141,7 +141,7 @@ func main() {
 		return
 	}
 	headers := getHeaders()
-	url := "https://" + domain + ".nepsetms.com.np/tmsapi/orderApi/order/"
+	url := "https://tms" + domain + ".nepsetms.com.np/tmsapi/orderApi/order/"
 
 	fmt.Println("Placing ORDER !!!")
 

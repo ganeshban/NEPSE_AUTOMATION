@@ -5,6 +5,10 @@ curl --location 'https://tms35.nepsetms.com.np/tmsapi/authApi/authenticate' \
 --header 'Referer: https://tms35.nepsetms.com.np/login' \
 --header 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
 --data '{
+
+
+
+
     "userName": "20210304277",
     "password": "VXNhQDEyMzQ1",
     "jwt": "",
@@ -14,6 +18,18 @@ curl --location 'https://tms35.nepsetms.com.np/tmsapi/authApi/authenticate' \
 }'
 
 
+
+
+
+
+ganeshban@Ganeshs-Air NEPSE_AUTOMATION %  cd /Users/ganeshban/Desktop/myWork/NEPSE_AUTOMATION ; /usr/bin/env /usr/local/bin/python3 /Users/ganeshban/.vscode/extensions/
+ms-python.debugpy-2025.0.1-darwin-arm64/bundled/libs/debugpy/adapter/../../debugpy/launcher 54265 -- /Users/ganeshban/Desktop/myWork/NEPSE_AUTOMATION/captcha.py 
+how many session you want ? 2
+Please enter captcha text : pqup73
+[{'dc4a96dc-d9ea-4ee5-94b3-2d1b567b4072', 'pqup73'}]
+Please enter captcha text : f5ha4e
+[{'f5ha4e', '5f9d0f65-6abf-4c88-b171-6f34eef366da'}]
+ganeshban@Ganeshs-Air NEPSE_AUTOMATION % 
 
 
 
