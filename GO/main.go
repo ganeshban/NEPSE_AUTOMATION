@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -161,9 +162,13 @@ func getHeaders() map[string]string {
 	token := os.Getenv("TOKEN")
 	session := os.Getenv("SESSION")
 	request_owner := os.Getenv("REQUEST_OWNER")
+	domain := os.Getenv("TMS")
 
 	headers := make(map[string]string)
 	headers["Content-Type"] = "application/json"
+	headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+	headers["host"] = "tms" + domain + ".nepsetms.com.np"
 	headers["accept"] = "application/json, text/plain, */*"
 	headers["cookie"] = cookie
 	headers["x-xsrf-token"] = token
@@ -177,6 +182,7 @@ func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string
 	defer wg.Done()
 
 	// Create a new POST request with the provided URL, headers, and payload
+
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(data)))
 	if err != nil {
 		fmt.Println("Error creating request:", err)
@@ -187,9 +193,10 @@ func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
-	fmt.Println("Request url is :", req.URL)
-	fmt.Println("Request body is :", req.Body)
-	fmt.Println("Request Header is :", req.Header)
+	req.Header.Add("Content-Length", strconv.Itoa(len(data)))
+	// fmt.Println("Request url is :", req.URL)
+	// fmt.Println("Request body is :", req.Body)
+	// fmt.Println("Request Header is :", req.Header)
 	// Sending HTTP POST request
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -207,9 +214,12 @@ func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string
 	}
 
 	// Print out the status code of the response
+	fmt.Printf("---------------------------------------------------------\n")
 	fmt.Printf("Received response with status code: %d\n", resp.StatusCode)
+	fmt.Printf("---------------------------------------------------------\n")
 
 	// Print the response body (or you could log it or process it as needed)
 	fmt.Println("Response Body:", string(responseBody))
+	fmt.Printf("---------------------------------------------------------\n")
 
 }

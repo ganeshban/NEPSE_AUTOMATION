@@ -26,8 +26,8 @@ if count>0:
         get_captcha_image(captcha_id)
         captcha_text=input("Please enter captcha text : ")
 
-        dump_data=list(dict())
-        dump_data.append({captcha_id,captcha_text})
+        dump_data=list(tuple())
+        dump_data.append((captcha_id,captcha_text))
 
         print(dump_data)
         file_name=f"{tms_id}.pkl"
