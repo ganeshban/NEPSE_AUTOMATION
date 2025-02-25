@@ -73,11 +73,11 @@ def update_req_metadata(metadata):
     lines.append(f"ID='{stock_info['id']}'\n")
     lines.append(f"SECURITY_ID='{stock_info['exchangeSecurityId']}'\n")
     lines.append(f"OPEN='{amt}'\n")
-    lines.append(f"PER2='{round(amt+(amt*0.02),1)}'\n")
-    lines.append(f"PER4='{round(amt+(amt*0.04),1)}'\n")
-    lines.append(f"PER6='{round(amt+(amt*0.06),1)}'\n")
-    lines.append(f"PER8='{round(amt+(amt*0.08),1)}'\n")
-    lines.append(f"PER10='{round(amt+(amt*0.10),1)}'\n")
+    lines.append(f"PER2='{round(amt+(amt*0.019),1)}'\n")
+    lines.append(f"PER4='{round(amt+(amt*0.039),1)}'\n")
+    lines.append(f"PER6='{round(amt+(amt*0.059),1)}'\n")
+    lines.append(f"PER8='{round(amt+(amt*0.079),1)}'\n")
+    lines.append(f"PER10='{round(amt+(amt*0.099),1)}'\n")
     lines.append(f"COOKIE='{cookie}'\n")
     lines.append(f"TOKEN='{token}'\n")
     lines.append(f"SESSION='{host_session}'\n")
@@ -96,10 +96,10 @@ def run_bash_script():
         os.system("runner.sh")
         
     if platform =="darwin":
-        os.system("bash ./GO/runner.sh")
+        os.system("bash ./runner.sh")
 
-# metadata = do_login()
-# update_req_metadata(metadata)
+metadata = do_login()
+update_req_metadata(metadata)
 if auto_runner():
     os.chmod("./Go/runner.sh",0o755)
     run_bash_script()
