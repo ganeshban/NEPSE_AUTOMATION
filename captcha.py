@@ -1,6 +1,4 @@
 import requests
-import pickle
-import os
 from PIL import Image
 from io import BytesIO
 from config.utils import get_tms_id,get_headers_before_login

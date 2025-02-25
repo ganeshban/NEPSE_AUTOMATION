@@ -1,9 +1,7 @@
 import requests
-import pickle
 import subprocess
 import os
 import sys
-import time
 import uuid
 from config.utils import encode_base64, get_tms_id,get_password,get_user_name, get_headers_before_login, auto_runner, get_symbol,get_headers_after_login
 from captcha import get_captcha
@@ -14,11 +12,8 @@ password = get_password()
 
 
 def do_login():
-    uuid,text = get_captcha()
+    text,uuid = get_captcha()
 
-    if len(text)>len(uuid):
-        text,uuid = uuid,text
-    
     payload = {
             "userName": user_name,
             "password": encode_base64(password),
@@ -93,52 +88,18 @@ def update_req_metadata(metadata):
 
     with open(file_name, "w") as f:
         f.writelines(lines)
+
 def run_bash_script():
-    platform=sys.platform()
+    platform=sys.platform
+    os.chdir("./GO")
     if platform =="win32":
-        subprocess.Popen(["start", "cmd", "/c", "./Go/runner.sh"], shell=True)
+        os.system("runner.sh")
         
     if platform =="darwin":
-        subprocess.Popen(["open", "-a", "Terminal", "./Go/runner.sh"])
+        os.system("bash ./GO/runner.sh")
 
-    pass
-
-metadata = do_login()
-update_req_metadata(metadata)
-if auto_runner()==True:
+# metadata = do_login()
+# update_req_metadata(metadata)
+if auto_runner():
+    os.chmod("./Go/runner.sh",0o755)
     run_bash_script()
-    os.system("chmod +x ./Go/runner.sh")
-    os.system("bash ./Go/runner.sh")
-    
-# sleep_time=60*25
-# while True:
-#     metadata = do_login()
-#     update_req_metadata(metadata)
-#     print(f'System will wake up again in {sleep_time//60} mins.')
-
-#     if auto_runner()==True:
-#         os.system("chmod +x ./Go/runner.sh")
-#         os.system("bash ./Go/runner.sh")
-    
-#     time.sleep(sleep_time)
-
-
-# count = int(input("how many session you want ? "))
-# if count>0:
-#     for i in range(count):
-#         captcha_id=get_captcha_uuid()
-#         get_captcha_image()
-#         captcha_text=input("Please enter captcha text : ")
-        
-#         dump_data=list(dict())
-#         dump_data.append({captcha_id,captcha_text})
-
-#         print(dump_data)
-#         file_name=f"{tms_id}.pkl"
-#         if os.path.exists(file_name):
-#             with open(file_name, "rb") as f:
-#                 old_data= pickle.load(f)
-#                 dump_data.extend(old_data)
-
-#         with open(file_name, "wb") as file:
-#             pickle.dump(dump_data, file)
