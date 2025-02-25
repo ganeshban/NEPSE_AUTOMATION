@@ -19,22 +19,9 @@ def get_captcha_image(img_path:str):
     image.show()
 
 
-count = int(input("how many session you want ? "))
-if count>0:
-    for i in range(count):
-        captcha_id=get_captcha_uuid()
-        get_captcha_image(captcha_id)
-        captcha_text=input("Please enter captcha text : ")
+def get_captcha():
+    captcha_id:str=get_captcha_uuid()
+    get_captcha_image(captcha_id)
+    captcha_text=input("Please enter captcha text : ")
 
-        dump_data=list(tuple())
-        dump_data.append((captcha_id,captcha_text))
-
-        print(dump_data)
-        file_name=f"{tms_id}.pkl"
-        if os.path.exists(file_name):
-            with open(file_name, "rb") as f:
-                old_data= pickle.load(f)
-                dump_data.extend(old_data)
-
-        with open(file_name, "wb") as file:
-            pickle.dump(dump_data, file)
+    return captcha_text, captcha_id

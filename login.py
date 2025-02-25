@@ -1,57 +1,27 @@
 import requests
 import pickle
+import subprocess
 import os
-import base64
 import sys
 import time
 import uuid
-from config.utils import get_tms_id,get_password,get_user_name, get_headers_before_login, auto_runner
+from config.utils import encode_base64, get_tms_id,get_password,get_user_name, get_headers_before_login, auto_runner, get_symbol,get_headers_after_login
+from captcha import get_captcha
 
 tms_id = get_tms_id()
 user_name = get_user_name()
 password = get_password()
 
-def exit_app():
-    print('exiting application ......................')
-    time.sleep(60)
-    sys.exit()
-
-def file_error():
-    print("no more session avaiable, please load the session first.")
-    exit_app()
-
-def get_captcha_info():
-    file_name = f"{tms_id}.pkl"
-    captcha_info:tuple = None
-    if os.path.exists(file_name):
-        if os.path.getsize(file_name)>0:
-            data = None
-            with open(file_name, "rb") as f:
-                data = list(pickle.load(f))
-                if len(data)>0:
-                    captcha_info = data.pop()
-                else:
-                    file_error()
-            
-            with open(file_name, "wb") as f:
-                pickle.dump(data, f)
-
-        else:
-            file_error()
-    else:
-        file_error()
-
-    return captcha_info
 
 def do_login():
-    uuid,text = get_captcha_info()
+    uuid,text = get_captcha()
 
     if len(text)>len(uuid):
         text,uuid = uuid,text
     
     payload = {
             "userName": user_name,
-            "password": base64.b64encode(password.encode()).decode(),
+            "password": encode_base64(password),
             "jwt": "",
             "otp": "",
             "captchaIdentifier": uuid,
@@ -72,7 +42,15 @@ def do_login():
         do_login()
     else:
         return res
+
+def get_stock_info(headers)->dict:
+    securities = requests.get(f"https://tms{tms_id}.nepsetms.com.np/tmsapi/stock/securities",headers=headers).json()
+    symbol = get_symbol()
+    security = [item for item in securities if item['symbol'].lower()==symbol.lower()]
+    return security[0]
     
+
+
 def update_req_metadata(metadata):
     data:dict = metadata.headers
     all_raw_cookies = str(data['set-cookie'])
@@ -89,34 +67,60 @@ def update_req_metadata(metadata):
     body = metadata.json()
     body = body['data']
     session = str(body['sessionId'])
-    session = base64.b64encode(session.encode()).decode()
+    session = encode_base64(session)
     host_session = f'{session}-{uuid.uuid4()}'
-    host_session =base64.b64encode(host_session.encode()).decode()
-
+    host_session = encode_base64(host_session)
+    owner = f"{body['user']['id']}"
+    headers = get_headers_after_login(cookie,host_session,token,owner)
+    stock_info = get_stock_info(headers)
     lines = []
-
+    amt=round((stock_info['preOpenDprHigh']+stock_info['preOpenDprLow'])/2,1)
+    lines.append(f"ID='{stock_info['id']}'\n")
+    lines.append(f"SECURITY_ID='{stock_info['exchangeSecurityId']}'\n")
+    lines.append(f"OPEN='{amt}'\n")
+    lines.append(f"PER2='{round(amt+(amt*0.02),1)}'\n")
+    lines.append(f"PER4='{round(amt+(amt*0.04),1)}'\n")
+    lines.append(f"PER6='{round(amt+(amt*0.06),1)}'\n")
+    lines.append(f"PER8='{round(amt+(amt*0.08),1)}'\n")
+    lines.append(f"PER10='{round(amt+(amt*0.10),1)}'\n")
     lines.append(f"COOKIE='{cookie}'\n")
     lines.append(f"TOKEN='{token}'\n")
     lines.append(f"SESSION='{host_session}'\n")
-    lines.append(f"REQUEST_OWNER='{body['user']['id']}'\n")
+    lines.append(f"REQUEST_OWNER='{owner}'\n")
     lines.append(f"TMS='{tms_id}'")
 
     file_name = './GO/.env'
 
     with open(file_name, "w") as f:
         f.writelines(lines)
+def run_bash_script():
+    platform=sys.platform()
+    if platform =="win32":
+        subprocess.Popen(["start", "cmd", "/c", "./Go/runner.sh"], shell=True)
+        
+    if platform =="darwin":
+        subprocess.Popen(["open", "-a", "Terminal", "./Go/runner.sh"])
 
-sleep_time=60*25
-while True:
-    metadata = do_login()
-    update_req_metadata(metadata)
-    print(f'System will wake up again in {sleep_time//60} mins.')
+    pass
 
-    if auto_runner()==True:
-        os.system("chmod +x ./Go/runner.sh")
-        os.system("bash ./Go/runner.sh")
+metadata = do_login()
+update_req_metadata(metadata)
+if auto_runner()==True:
+    run_bash_script()
+    os.system("chmod +x ./Go/runner.sh")
+    os.system("bash ./Go/runner.sh")
     
-    time.sleep(sleep_time)
+# sleep_time=60*25
+# while True:
+#     metadata = do_login()
+#     update_req_metadata(metadata)
+#     print(f'System will wake up again in {sleep_time//60} mins.')
+
+#     if auto_runner()==True:
+#         os.system("chmod +x ./Go/runner.sh")
+#         os.system("bash ./Go/runner.sh")
+    
+#     time.sleep(sleep_time)
 
 
 # count = int(input("how many session you want ? "))

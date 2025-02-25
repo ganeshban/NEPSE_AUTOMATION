@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import base64
 
 load_dotenv()
 def get_user_name():
@@ -14,6 +15,15 @@ def get_tms_id():
 def auto_runner():
     return os.getenv("AUTO_START_ORDER")
 
+def get_symbol():
+    return os.getenv("SYMBOL")
+
+def encode_base64(param:str):
+    return base64.b64encode(param.encode()).decode()
+
+def decode_base64(param:str):
+    return base64.b64decode(param).decode()
+
 def get_headers_before_login():
     return {
             # 'Origin': f'https://tms{get_tms_id()}.nepsetms.com.np',
@@ -23,10 +33,10 @@ def get_headers_before_login():
             'Content-Type' : 'application/json',
             }
 
-def get_headers_after_login():
+def get_headers_after_login(cookie, session, token, owner):
     return {
-            'Cookie' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-            'X-XSRF-TOKEN' : 'application/json, text/plain, */*',
-            'host-session-id' : f'https://tms{get_tms_id()}.nepsetms.com.np/login',
-            'request-owner' : f'https://tms{get_tms_id()}.nepsetms.com.np/login'
+            'Cookie' : cookie,
+            'X-XSRF-TOKEN' : token,
+            'host-session-id' : session,
+            'request-owner' : owner
             } | get_headers_before_login()
