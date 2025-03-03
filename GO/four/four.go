@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -20,7 +21,7 @@ func main() {
 
 	domain := os.Getenv("TMS")
 
-	price := os.Getenv("PER8")
+	price := os.Getenv("PER4")
 	qty := "10"
 	security_id := os.Getenv("ID")
 	security_exchange_id := os.Getenv("SECURITY_ID")
@@ -111,18 +112,22 @@ func main() {
 	headers := getHeaders()
 	url := "https://tms" + domain + ".nepsetms.com.np/tmsapi/orderApi/order/"
 
-	fmt.Println("Placing ORDER !!!")
+	fmt.Println("Placing ORDER for 4 Percent ------>")
 
 	var wg sync.WaitGroup
+	var mu sync.Mutex
+	successCount := 0
+	interval := 1 * time.Millisecond
+	ticker := time.NewTicker(interval)
 
-	for i := 0; i < 3; i++ {
-		wg.Add(1) // Add one to the WaitGroup counter
-		go sendRequest(&wg, url, data, headers)
-
-		fmt.Println("       -->", qty, "@", price)
+	for successCount < 3 {
+		wg.Add(1)
+		go sendRequest(&wg, url, data, headers, &successCount, &mu)
+		<-ticker.C
 	}
-
+	ticker.Stop()
 	wg.Wait()
+
 }
 
 func getHeaders() map[string]string {
@@ -147,10 +152,8 @@ func getHeaders() map[string]string {
 	return headers
 }
 
-func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string]string) {
+func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string]string, successCount *int, mu *sync.Mutex) {
 	defer wg.Done()
-
-	// Create a new POST request with the provided URL, headers, and payload
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(data)))
 	if err != nil {
@@ -158,7 +161,6 @@ func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string
 		return
 	}
 
-	// Add headers to the request
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
@@ -170,5 +172,11 @@ func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string
 		return
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		mu.Lock()
+		*successCount++
+		mu.Unlock()
+	}
 
 }
