@@ -25,6 +25,10 @@ func main() {
 	qty := "2000"
 	security_id := os.Getenv("ID")
 	security_exchange_id := os.Getenv("SECURITY_ID")
+	symbol := os.Getenv("SYMBOL")
+	client_id := os.Getenv("CLIENT_ID")
+	member_code := os.Getenv("MEMBER_CODE")
+	client_code := os.Getenv("CLIENT_CODE")
 
 	data := `{
     "orderBook": {
@@ -65,14 +69,14 @@ func main() {
         },
         "client": {
             "activeStatus": "A",
-            "id": 2234482,
+            "id": ` + client_id + `,
             "accountType": "CLI",
             "allowedToTrade": "Y",
-            "clientMemberCode": "20231252966",
+            "clientMemberCode": ` + member_code + `,
             "clientOrDealer": "C",
-            "contactNumber": "9847240018",
+            "contactNumber": "PHONE",
             "emailId": null,
-            "notsUniqueClientCode": "202312293604532",
+            "notsUniqueClientCode": ` + client_code + `,
             "clientDealerType": null,
             "clientGroup": {
                 "activeStatus": "A",
@@ -84,7 +88,7 @@ func main() {
                 "activeStatus": "A",
                 "id": 4
             },
-            "displayName": "KISHOR KUMAR GIRI",
+            "displayName": "NAME",
             "shortSellMode": 0,
             "onlineOrOffline": 1,
             "collateralCalculationMode": 1
@@ -112,7 +116,7 @@ func main() {
 	headers := getHeaders()
 	url := "https://tms" + domain + ".nepsetms.com.np/tmsapi/orderApi/order/"
 
-	fmt.Println("Placing ORDER for 10 Percent ------>")
+	fmt.Println("Placing ORDER for " + symbol + " at " + qty + " @ " + price)
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex

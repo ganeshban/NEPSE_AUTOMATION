@@ -1,5 +1,4 @@
 import requests
-import subprocess
 import os
 import sys
 import uuid
@@ -87,7 +86,11 @@ def update_req_metadata(metadata):
     lines.append(f"TOKEN='{token}'\n")
     lines.append(f"SESSION='{host_session}'\n")
     lines.append(f"REQUEST_OWNER='{owner}'\n")
-    lines.append(f"TMS='{tms_id}'")
+    lines.append(f"TMS='{tms_id}'\n")
+    lines.append(f"SYMBOL='{get_symbol()}'\n")
+    lines.append(f"CLIENT_ID='{body['clientDealerMember']['client']['id']}'\n")
+    lines.append(f"MEMBER_CODE='{body['clientDealerMember']['client']['clientMemberCode']}'\n")
+    lines.append(f"CLIENT_CODE='{body['clientDealerMember']['client']['notsUniqueClientCode']}'\n")
 
     file_name = './GO/.env'
 
@@ -105,6 +108,7 @@ def run_bash_script():
 
 metadata = do_login()
 update_req_metadata(metadata)
-if auto_runner():
+auto=auto_runner()
+if auto:
     os.chmod("./Go/runner.sh",0o755)
     run_bash_script()

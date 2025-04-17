@@ -13,7 +13,7 @@ def get_tms_id():
     return os.getenv("TMS_ID")
 
 def auto_runner():
-    return bool(os.getenv("AUTO_START_ORDER"))
+    return bool(os.getenv("AUTO_START_ORDER",False))
 
 def get_symbol():
     return os.getenv("SYMBOL")
