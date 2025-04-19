@@ -1,9 +1,9 @@
 import requests
-import subprocess
 import os
+import subprocess
 import sys
 import uuid
-from config.utils import encode_base64, get_tms_id,get_password,get_user_name, get_headers_before_login, auto_runner, get_symbol,get_headers_after_login
+from config.utils import encode_base64, get_tms_id,get_password,get_user_name,auto_runner ,get_headers_before_login, auto_generate_runner, get_symbol,get_headers_after_login
 from captcha import get_captcha
 
 tms_id = get_tms_id()
@@ -69,20 +69,29 @@ def update_req_metadata(metadata):
     headers = get_headers_after_login(cookie,host_session,token,owner)
     stock_info = get_stock_info(headers)
     lines = []
-    amt=round((stock_info['preOpenDprHigh']+stock_info['preOpenDprLow'])/2,1)
+    baseAmt=round((stock_info['preOpenDprHigh']+stock_info['preOpenDprLow'])/2,1)
+    amt=baseAmt
     lines.append(f"ID='{stock_info['id']}'\n")
     lines.append(f"SECURITY_ID='{stock_info['exchangeSecurityId']}'\n")
     lines.append(f"OPEN='{amt}'\n")
-    lines.append(f"PER2='{round(amt+(amt*0.019),1)}'\n")
-    lines.append(f"PER4='{round(amt+(amt*0.039),1)}'\n")
-    lines.append(f"PER6='{round(amt+(amt*0.059),1)}'\n")
-    lines.append(f"PER8='{round(amt+(amt*0.079),1)}'\n")
-    lines.append(f"PER10='{round(amt+(amt*0.099),1)}'\n")
+    amt=round(amt+(amt*0.02),1)
+    lines.append(f"PER2='{amt}'\n")
+    amt=round(amt+(amt*0.02),1)
+    lines.append(f"PER4='{amt}'\n")
+    amt=round(amt+(amt*0.02),1)
+    lines.append(f"PER6='{amt}'\n")
+    amt=round(amt+(amt*0.02),1)
+    lines.append(f"PER8='{amt}'\n")
+    lines.append(f"PER10='{round(baseAmt+(baseAmt*0.1),1)}'\n")
     lines.append(f"COOKIE='{cookie}'\n")
     lines.append(f"TOKEN='{token}'\n")
     lines.append(f"SESSION='{host_session}'\n")
     lines.append(f"REQUEST_OWNER='{owner}'\n")
-    lines.append(f"TMS='{tms_id}'")
+    lines.append(f"TMS='{tms_id}'\n")
+    lines.append(f"SYMBOL='{get_symbol()}'\n")
+    lines.append(f"CLIENT_ID='{body['clientDealerMember']['client']['id']}'\n")
+    lines.append(f"MEMBER_CODE='{body['clientDealerMember']['client']['clientMemberCode']}'\n")
+    lines.append(f"CLIENT_CODE='{body['clientDealerMember']['client']['notsUniqueClientCode']}'\n")
 
     file_name = './GO/.env'
 
@@ -91,15 +100,34 @@ def update_req_metadata(metadata):
 
 def run_bash_script():
     platform=sys.platform
-    os.chdir("./GO")
     if platform =="win32":
         os.system("runner.sh")
         
     if platform =="darwin":
         os.system("bash ./runner.sh")
 
+def run_all_runner():
+    RUNNER_DIR = "runner"
+    sh_files = [f for f in os.listdir(RUNNER_DIR) if f.endswith(".sh")]
+    processes = []
+    for sh_file in sh_files:
+        sh_path = os.path.join(RUNNER_DIR, sh_file)
+        p = subprocess.Popen(["bash", sh_path])
+        processes.append((sh_file, p))
+
+    for sh_file, p in processes:
+        p.wait()
+        
+
 metadata = do_login()
 update_req_metadata(metadata)
-if auto_runner():
-    os.chmod("./Go/runner.sh",0o755)
+generator=auto_generate_runner()
+runner=auto_runner()
+if generator:
+    os.chmod("./runner.sh",0o755)
     run_bash_script()
+
+
+if runner:
+    run_all_runner()
+
