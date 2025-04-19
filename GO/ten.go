@@ -21,10 +21,15 @@ func main() {
 
 	domain := os.Getenv("TMS")
 
-	price := os.Getenv("PER2")
-	qty := "10"
+	price := os.Getenv("PER10")
+	qty := "500"
+	max_order := 5
 	security_id := os.Getenv("ID")
 	security_exchange_id := os.Getenv("SECURITY_ID")
+	symbol := os.Getenv("SYMBOL")
+	client_id := os.Getenv("CLIENT_ID")
+	member_code := os.Getenv("MEMBER_CODE")
+	client_code := os.Getenv("CLIENT_CODE")
 
 	data := `{
     "orderBook": {
@@ -65,14 +70,14 @@ func main() {
         },
         "client": {
             "activeStatus": "A",
-            "id": 2234482,
+            "id": ` + client_id + `,
             "accountType": "CLI",
             "allowedToTrade": "Y",
-            "clientMemberCode": "20231252966",
+            "clientMemberCode": ` + member_code + `,
             "clientOrDealer": "C",
-            "contactNumber": "9847240018",
+            "contactNumber": "PHONE",
             "emailId": null,
-            "notsUniqueClientCode": "202312293604532",
+            "notsUniqueClientCode": ` + client_code + `,
             "clientDealerType": null,
             "clientGroup": {
                 "activeStatus": "A",
@@ -84,7 +89,7 @@ func main() {
                 "activeStatus": "A",
                 "id": 4
             },
-            "displayName": "KISHOR KUMAR GIRI",
+            "displayName": "NAME",
             "shortSellMode": 0,
             "onlineOrOffline": 1,
             "collateralCalculationMode": 1
@@ -112,7 +117,7 @@ func main() {
 	headers := getHeaders()
 	url := "https://tms" + domain + ".nepsetms.com.np/tmsapi/orderApi/order/"
 
-	fmt.Println("Placing ORDER for 2 Percent ------>")
+	fmt.Println("Placing order for " + symbol + " at " + qty + " @ " + price)
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
@@ -120,9 +125,9 @@ func main() {
 	interval := 1 * time.Millisecond
 	ticker := time.NewTicker(interval)
 
-	for successCount < 3 {
+	for successCount < max_order {
 		wg.Add(1)
-		go sendRequest(&wg, url, data, headers, &successCount, &mu)
+		go sendRequest(&wg, url, data, headers, &successCount, &mu, max_order)
 		<-ticker.C
 	}
 	ticker.Stop()
@@ -152,7 +157,7 @@ func getHeaders() map[string]string {
 	return headers
 }
 
-func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string]string, successCount *int, mu *sync.Mutex) {
+func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string]string, successCount *int, mu *sync.Mutex, order int) {
 	defer wg.Done()
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(data)))
@@ -168,15 +173,15 @@ func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending POST request:", err)
+		fmt.Println("Error : ", err)
 		return
 	}
 	defer resp.Body.Close()
-
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		mu.Lock()
 		*successCount++
 		mu.Unlock()
+		fmt.Println(strconv.Itoa(*successCount) + "/" + strconv.Itoa(order) + "ORDER Placed!!!")
 	}
 
 }

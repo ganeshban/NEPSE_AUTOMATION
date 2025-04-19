@@ -15,6 +15,9 @@ def get_tms_id():
 def auto_runner():
     return bool(os.getenv("AUTO_START_ORDER",False))
 
+def auto_generate_runner():
+    return bool(os.getenv("AUTO_GENERATE_RUNNER",False))
+
 def get_symbol():
     return os.getenv("SYMBOL")
 

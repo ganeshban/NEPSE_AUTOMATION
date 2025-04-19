@@ -1,8 +1,9 @@
 import requests
 import os
+import subprocess
 import sys
 import uuid
-from config.utils import encode_base64, get_tms_id,get_password,get_user_name, get_headers_before_login, auto_runner, get_symbol,get_headers_after_login
+from config.utils import encode_base64, get_tms_id,get_password,get_user_name,auto_runner ,get_headers_before_login, auto_generate_runner, get_symbol,get_headers_after_login
 from captcha import get_captcha
 
 tms_id = get_tms_id()
@@ -99,16 +100,34 @@ def update_req_metadata(metadata):
 
 def run_bash_script():
     platform=sys.platform
-    os.chdir("./GO")
     if platform =="win32":
         os.system("runner.sh")
         
     if platform =="darwin":
         os.system("bash ./runner.sh")
 
+def run_all_runner():
+    RUNNER_DIR = "runner"
+    sh_files = [f for f in os.listdir(RUNNER_DIR) if f.endswith(".sh")]
+    processes = []
+    for sh_file in sh_files:
+        sh_path = os.path.join(RUNNER_DIR, sh_file)
+        p = subprocess.Popen(["bash", sh_path])
+        processes.append((sh_file, p))
+
+    for sh_file, p in processes:
+        p.wait()
+        
+
 metadata = do_login()
 update_req_metadata(metadata)
-auto=auto_runner()
-if auto:
-    os.chmod("./Go/runner.sh",0o755)
+generator=auto_generate_runner()
+runner=auto_runner()
+if generator:
+    os.chmod("./runner.sh",0o755)
     run_bash_script()
+
+
+if runner:
+    run_all_runner()
+
