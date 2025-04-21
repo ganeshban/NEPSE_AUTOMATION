@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -23,7 +24,6 @@ func main() {
 
 	price := os.Getenv("PER10")
 	qty := "500"
-	max_order := 5
 	security_id := os.Getenv("ID")
 	security_exchange_id := os.Getenv("SECURITY_ID")
 	symbol := os.Getenv("SYMBOL")
@@ -119,19 +119,58 @@ func main() {
 
 	fmt.Println("Placing order for " + symbol + " at " + qty + " @ " + price)
 
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	successCount := 0
-	interval := 1 * time.Millisecond
-	ticker := time.NewTicker(interval)
+	const (
+		maxOrder        = 5
+		maxConcurrent   = 100
+		requestInterval = 1 * time.Millisecond
+	)
 
-	for successCount < max_order {
-		wg.Add(1)
-		go sendRequest(&wg, url, data, headers, &successCount, &mu, max_order)
+	var (
+		successCount int
+		mu           sync.Mutex
+		wg           sync.WaitGroup
+	)
+
+	sem := make(chan struct{}, maxConcurrent)
+	ticker := time.NewTicker(requestInterval)
+	defer ticker.Stop()
+
+	for {
+		mu.Lock()
+		if successCount >= maxOrder {
+			mu.Unlock()
+			break
+		}
+		mu.Unlock()
+
 		<-ticker.C
+		sem <- struct{}{}
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			if sendRequest(url, data, headers) {
+				mu.Lock()
+				if successCount < maxOrder {
+					successCount++
+				}
+				mu.Unlock()
+				fmt.Println(strconv.Itoa(successCount) + " / " + strconv.Itoa(maxOrder) + " order placed! ")
+			}
+		}()
 	}
-	ticker.Stop()
+
 	wg.Wait()
+
+	// for successCount < max_order {
+	// 	wg.Add(1)
+	// 	go sendRequest(url, data, headers)
+	// 	<-ticker.C
+	// }
+	// ticker.Stop()
+	// wg.Wait()
 
 }
 
@@ -157,31 +196,27 @@ func getHeaders() map[string]string {
 	return headers
 }
 
-func sendRequest(wg *sync.WaitGroup, url string, data string, headers map[string]string, successCount *int, mu *sync.Mutex, order int) {
-	defer wg.Done()
+func sendRequest(url string, data string, headers map[string]string) bool {
+	_, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(data)))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
+		return false
 	}
 
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
 	req.Header.Add("Content-Length", strconv.Itoa(len(data)))
-	client := &http.Client{}
-	resp, err := client.Do(req)
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Println("Error : ", err)
-		return
+		return false
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		mu.Lock()
-		*successCount++
-		mu.Unlock()
-		fmt.Println(strconv.Itoa(*successCount) + "/" + strconv.Itoa(order) + "ORDER Placed!!!")
-	}
+
+	return resp.StatusCode == http.StatusOK
 
 }
