@@ -1,6 +1,5 @@
 from concurrent.futures import as_completed, ThreadPoolExecutor
-import requests_futures.sessions
-import requests_futures
+from requests_futures.sessions import FuturesSession
 from dotenv import load_dotenv
 import os
 
@@ -111,16 +110,18 @@ pload = {
 # .replace("{price}",str(price)).replace("{qty}",str(qty)).replace("{security_id}",str(security_id)).replace("{id}",str(id))
 max_order=5
 success_count=0
-with requests_futures.sessions.FuturesSession(executor=ThreadPoolExecutor(max_workers=8)) as session:
-    print(f"Placing order for {symbol} at {qty} @ {price}")
-    while max_order> success_count:
-        futures = [session.post(url, headers=headers, json=pload) for _ in range(int(5))]
+with FuturesSession(executor=ThreadPoolExecutor(max_workers=8)) as session:
+    while success_count < max_order:
+        batch_size = min(5, max_order - success_count)
+        futures = [session.post(url, headers=headers, json=pload) for _ in range(5)]
+        
         for future in as_completed(futures):
             try:
                 response = future.result()
-                if response.status_code == 200 and response.status_code==201:
-                    success_count=success_count+1
-                    print(f"{success_count}/{max_order} order placed!")
+                if response.status_code in (200, 201):
+                    success_count += 1
+                else:
+                    print(f"Failed with status {response.status_code}: {response.text}")
             except Exception as e:
-                pass
+                print(f"Exception occurred: {e}")
     print("done!")
