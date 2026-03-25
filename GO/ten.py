@@ -1,4 +1,4 @@
-from concurrent.futures import as_completed, ThreadPoolExecutor
+from concurrent.futures import as_completed
 from requests_futures.sessions import FuturesSession
 from dotenv import load_dotenv
 import os
@@ -19,6 +19,43 @@ client_code=os.getenv("CLIENT_CODE")
 url="https://tms" + tms + ".nepsetms.com.np/tmsapi/orderApi/order/"
 qty = 500
 
+pload = {
+    "orderBook": {
+        "orderBookExtensions": [{
+            "orderTypes": {"id": 1, "orderTypeCode": "LMT"},
+            "disclosedQuantity": 0,
+            "orderValidity": {"id": 1, "orderValidityCode": "DAY"},
+            "triggerPrice": 0,
+            "orderPrice": price,
+            "orderQuantity": qty,
+            "remainingOrderQuantity": 10,
+            "marketType": {"id": 2, "marketType": "Continuous"}
+        }],
+        "exchange": {"id": 1},
+        "dnaConnection": {}, "dealer": {}, "member": {},
+        "productType": {"id": 1, "productCode": "CNC"},
+        "instrumentType": {"id": 1, "code": "EQ"},
+        "client": {
+            "activeStatus": "A", "id": client_id,
+            "accountType": "CLI", "allowedToTrade": "Y",
+            "clientMemberCode": member_code,
+            "clientOrDealer": "C",
+            "notsUniqueClientCode": client_code,
+            "clientGroup": {"activeStatus": "A", "id": 101},
+            "memberBranch": {"activeStatus": "A", "id": 2},
+            "shortSellMode": 0, "onlineOrOffline": 1,
+            "panNumber": "Pan", "collateralCalculationMode": 1
+        },
+        "security": {
+            "id": id, "exchangeSecurityId": security_id,
+            "marketProtectionPercentage": 0,
+            "divisor": 100, "boardLotQuantity": 1, "tickSize": 0.1
+        },
+        "accountType": 1, "cpMemberId": 0, "buyOrSell": 1
+    },
+    "orderPlacedBy": 2,
+    "exchangeOrderId": None
+}
 
 headers = {
     'Cookie': cookie,
@@ -31,97 +68,19 @@ headers = {
     'Accept': 'application/json, text/plain, */*',
 }
 
-
-pload = {
-    "orderBook": {
-        "orderBookExtensions": [
-            {
-                "orderTypes": {
-                    "id": 1,
-                    "orderTypeCode": "LMT"
-                },
-                "disclosedQuantity": 0,
-                "orderValidity": {
-                    "id": 1,
-                    "orderValidityCode": "DAY"
-                },
-                "triggerPrice": 0,
-                "orderPrice": {price},
-                "orderQuantity": {qty},
-                "remainingOrderQuantity": 10,
-                "marketType": {
-                    "id": 2,
-                    "marketType": "Continuous"
-                }
-            }
-        ],
-        "exchange": {
-            "id": 1
-        },
-        "dnaConnection": {},
-        "dealer": {},
-        "member": {},
-        "productType": {
-            "id": 1,
-            "productCode": "CNC"
-        },
-        "instrumentType": {
-            "id": 1,
-            "code": "EQ"
-        },
-        "client": {
-            "activeStatus": "A",
-            "id": {client_id},
-            "accountType": "CLI",
-            "allowedToTrade": "Y",
-            "clientMemberCode": {member_code},
-            "clientOrDealer": "C",
-            "notsUniqueClientCode": {client_code},
-            "clientGroup": {
-                "activeStatus": "A",
-                "id": 101
-            },
-            "memberBranch": {
-                "activeStatus": "A",
-                "id": 2
-            },
-
-            "shortSellMode": 0,
-            "onlineOrOffline": 1,
-            "panNumber": "Pan",
-            "collateralCalculationMode": 1,
-        },
-        "security": {
-            "id": {id},
-            "exchangeSecurityId": {security_id},
-            "marketProtectionPercentage": 0,
-            "divisor": 100,
-            "boardLotQuantity": 1,
-            "tickSize": 0.1
-        },
-        "accountType": 1,
-        "cpMemberId": 0,
-        "buyOrSell": 1
-    },
-    "orderPlacedBy": 2,
-    "exchangeOrderId": None
-}
-
-# .replace("{price}",str(price)).replace("{qty}",str(qty)).replace("{security_id}",str(security_id)).replace("{id}",str(id))
 max_order=5
+CONCURRENCY=5
 success_count=0
-with FuturesSession(executor=ThreadPoolExecutor(max_workers=8)) as session:
-    while success_count < max_order:
-        batch_size = min(5, max_order - success_count)
-        futures = [session.post(url, headers=headers, json=pload) for _ in range(5)]
-        
+
+with FuturesSession(max_workers=CONCURRENCY) as session:
+    while success_count<max_order:
+        sending_item=min(CONCURRENCY,max_order-success_count)
+        futures = [session.post(url, headers = headers, json = pload) for _ in range(sending_item)]
         for future in as_completed(futures):
             try:
                 response = future.result()
                 if response.status_code in (200, 201):
-                    success_count += 1
-                else:
-                    print(f"Failed with status {response.status_code}: {response.text}")
+                    success_count +=1
+                print(response.text)
             except Exception as e:
-                print(f"Exception occurred: {e}")
-    print("done!")
+                print (f"exception {e}")
